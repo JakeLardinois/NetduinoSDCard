@@ -17,14 +17,15 @@ namespace NetduinoSDCard
         public static Object SDCardLock = new Object();
         public const string MountDirectoryPath = @"\SD";
 
+        private DirectoryInfo mWorkingDirectoryInfo { get; set; }
         public DirectoryInfo WorkingDirectoryInfo
         {
-            get { return WorkingDirectoryInfo; }
+            get { return mWorkingDirectoryInfo; }
             set
             {
                 var strPath = MountDirectoryPath + value;
                 CreateDirectory(strPath);
-                WorkingDirectoryInfo = new DirectoryInfo(strPath);
+                mWorkingDirectoryInfo = new DirectoryInfo(strPath);
             }
         }
 
