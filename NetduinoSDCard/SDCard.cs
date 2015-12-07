@@ -15,7 +15,31 @@ namespace NetduinoSDCard
         const int WRITE_CHUNK_SIZE = 1500;// 
 
         public static Object SDCardLock = new Object();
-        public const string MountDirectoryPath = "\\SD";
+        public const string MountDirectoryPath = @"\SD";
+
+        public DirectoryInfo WorkingDirectoryInfo
+        {
+            get { return WorkingDirectoryInfo; }
+            set
+            {
+                var strPath = MountDirectoryPath + value;
+                CreateDirectory(strPath);
+                WorkingDirectoryInfo = new DirectoryInfo(strPath);
+            }
+        }
+
+        public string GetWorkingDirectoryPath()
+        {
+            if (WorkingDirectoryInfo == null)
+                return MountDirectoryPath;
+            else
+                return MountDirectoryPath + WorkingDirectoryInfo.FullName + "\\";
+        }
+
+        public static string GetFullDirectoryPath(string folderName)
+        {
+            return MountDirectoryPath + folderName;
+        }
 
         public static string GetFileFullPath(string fileName)// todo allow for trailing slash on f
         {
@@ -106,6 +130,21 @@ namespace NetduinoSDCard
         }
         //http://forums.netduino.com/index.php?/topic/2394-memory-efficient-way-to-enumerate-an-array-of-fileinfo/page__p__16985__hl__%2Bsdcard+%2Benumerate__fromsearch__1#entry16985
 
+        public string ReadTextFile(string fullPath)
+        {
+            var FileContents = string.Empty;
+
+            ConsoleWrite.Print("Reading file: " + fullPath);
+            lock (SDCardLock)
+            {
+                if (File.Exists(fullPath))
+                    using (StreamReader objStreamReader = new StreamReader(fullPath))
+                        FileContents = objStreamReader.ReadToEnd();
+                else
+                    throw new IOException("File Not Found!");
+            }
+            return FileContents;
+        }
 
         public bool ReadInChunks(string fullPath, Socket socket)
         {
