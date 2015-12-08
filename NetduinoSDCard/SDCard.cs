@@ -89,14 +89,9 @@ namespace NetduinoSDCard
             }
         }
 
-        public bool AppendLine(string path, string fileName, string text)
+        public bool WriteLine(string path, string fileName, FileMode fileMode, string text)
         {
-            return Write(path, fileName, FileMode.Append, text + "\n");// todo \r\n??
-        }
-
-        public bool WriteLine(string path, string fileName, string text)
-        {
-            return Write(path, fileName, FileMode.Create , text + "\n");// todo \r\n??
+            return Write(path, fileName, fileMode, text + "\n");// todo \r\n??
         }
 
         public bool Write(string path, string fileName, FileMode fileMode, string text)
