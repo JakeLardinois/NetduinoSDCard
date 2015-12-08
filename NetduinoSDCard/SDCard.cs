@@ -34,7 +34,7 @@ namespace NetduinoSDCard
             if (WorkingDirectoryInfo == null)
                 return MountDirectoryPath;
             else
-                return MountDirectoryPath + WorkingDirectoryInfo.FullName + "\\";
+                return WorkingDirectoryInfo.FullName + "\\";
         }
 
         public static string GetFullDirectoryPath(string folderName)
@@ -89,9 +89,14 @@ namespace NetduinoSDCard
             }
         }
 
-        public bool WriteLine(string path, string fileName, string text)
+        public bool AppendLine(string path, string fileName, string text)
         {
             return Write(path, fileName, FileMode.Append, text + "\n");// todo \r\n??
+        }
+
+        public bool WriteLine(string path, string fileName, string text)
+        {
+            return Write(path, fileName, FileMode.Create , text + "\n");// todo \r\n??
         }
 
         public bool Write(string path, string fileName, FileMode fileMode, string text)
@@ -130,6 +135,23 @@ namespace NetduinoSDCard
             return true;
         }
         //http://forums.netduino.com/index.php?/topic/2394-memory-efficient-way-to-enumerate-an-array-of-fileinfo/page__p__16985__hl__%2Bsdcard+%2Benumerate__fromsearch__1#entry16985
+
+        public string ReadLine(string fullPath)
+        {
+            var FileContents = string.Empty;
+
+            ConsoleWrite.Print("Reading file: " + fullPath);
+            lock (SDCardLock)
+            {
+                if (File.Exists(fullPath))
+                    using (StreamReader objStreamReader = new StreamReader(fullPath))
+                        FileContents = objStreamReader.ReadLine();
+                else
+                    throw new IOException("File Not Found!");
+            }
+            return FileContents;
+
+        }
 
         public string ReadTextFile(string fullPath)
         {
