@@ -17,16 +17,27 @@ namespace NetduinoSDCard
         public static Object SDCardLock = new Object();
         public const string MountDirectoryPath = @"\SD";
 
-        private DirectoryInfo mWorkingDirectoryInfo { get; set; }
-        public DirectoryInfo WorkingDirectoryInfo
+        public SDCard()
         {
-            get { return mWorkingDirectoryInfo; }
-            set
-            {
-                var strPath = MountDirectoryPath + value;
-                CreateDirectory(strPath);
-                mWorkingDirectoryInfo = new DirectoryInfo(strPath);
-            }
+        }
+        public SDCard(string WorkingDirectory)
+        {
+            SetWorkingDirectoryInfo(WorkingDirectory);
+        }
+
+        public DirectoryInfo WorkingDirectoryInfo { get; set; }
+        public void SetWorkingDirectoryInfo(string WorkingDirectory)
+        {
+            string strPath = string.Empty;
+
+
+            if (WorkingDirectory.LastIndexOf("\\") == WorkingDirectory.Length - 1)
+                strPath = MountDirectoryPath + WorkingDirectory;
+            else
+                strPath = MountDirectoryPath + WorkingDirectory + "\\";
+
+            CreateDirectory(strPath);
+            WorkingDirectoryInfo = new DirectoryInfo(strPath);
         }
 
         public string GetWorkingDirectoryPath()
@@ -164,7 +175,7 @@ namespace NetduinoSDCard
             return FileContents;
         }
 
-        public bool ReadInChunks(string fullPath, Socket socket)
+        public void SendFile(string fullPath, Socket socket)
         {
             ConsoleWrite.Print("Reading file: " + fullPath);
             bool chunkHasBeenRead = false;
@@ -198,7 +209,6 @@ namespace NetduinoSDCard
                 ConsoleWrite.Print("Sending " + totalBytesRead.ToString() + " bytes...");
             else
                 ConsoleWrite.Print("Failed to read chunk, full path: " + fullPath);
-            return chunkHasBeenRead;
         }
 
         public static string Replace(string input, char[] oldText, string newText)
